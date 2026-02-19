@@ -1,12 +1,12 @@
 # Raspberry Pi Zero 2 W WiFi Fix – Headless First-Boot Setup 
 
-This repository provides a simple, reliable workaround for cases where a **fresh Raspberry Pi OS Bookworm install** on a **Raspberry Pi Zero 2 W** fails to connect to WiFi automatically — even when pre-configured via Raspberry Pi Imager.
+This repository provides a simple, reliable workaround for cases where a **fresh Raspberry Pi OS install** on a **Raspberry Pi Zero 2 W** fails to connect to WiFi automatically — even when pre-configured via Raspberry Pi Imager.
 
 ### The Problem
 
-In Raspberry Pi OS Bookworm (and later), headless WiFi setup via the Imager's advanced options sometimes fails silently on the Pi Zero 2 W (often due to NetworkManager timing, driver initialization, country code issues, or Imager bugs in certain versions). The device boots but never joins the network, leaving you without SSH or remote access.
+In Raspberry Pi OS, headless WiFi setup via the Imager's advanced options sometimes fails silently on the Pi Zero 2 W (often due to NetworkManager timing, driver initialization, country code issues, or Imager bugs in certain versions). The device boots but never joins the network, leaving you without SSH or remote access.
 
-After searching wround it was clean many are having the same issue. My first successful connection to WiFi invonved setting up the Raspberry Pi zero 2 W as a usb gadget, SSH into it and setup WiFi more or less the way the script does. However, it was extremly finiky and the SSH connection kept dropping.
+After searching around it was clean many are having the same issue. My first successful connection to WiFi involved setting up the Raspberry Pi zero 2 W as a usb gadget, SSH into it and setup WiFi more or less the way the script does. However, it was extremely finicky and the SSH connection kept dropping.
 
 This fix uses a custom first-boot script triggered via kernel command line to force WiFi configuration using **NetworkManager** (`nmcli`), without the need to setup the usb gadget etc.
 
@@ -14,7 +14,7 @@ Tested successfully on:
 - Raspberry Pi Zero 2 W
 - Raspberry Pi OS Lite (64-bit)
 - Headless setup (no monitor/keyboard)
-- Meshed WiFi where both 5GHz and 2.4GHz share the same SSID (reported as a limitation)
+- Meshed WiFi, same SSID for 2.4/5 GHz (reported as a limitation)
 - MacOS Monterey
 
 ### Solution Overview
@@ -44,7 +44,7 @@ Tested successfully on:
 
 3. **Replace cmdline.txt**
    - Overwrite the file `cmdline.txt` in the boot partition with the one in the repo.
-   - It should look like this ```console=serial0,115200 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 fsck.repair=yes rootwait systemd.run=/boot/firmware/firstrun.sh systemd.run_success_action=reboot``` where this is what we add to it **systemd.run=/boot/firmware/firstrun.sh systemd.run_success_action=reboot**. It instructs the system to run our script and if successful, reboot. If the script run successfuly it will remove the addition so that it only runs again if WiFi connection was not established.
+   - It should look like this ```console=serial0,115200 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 fsck.repair=yes rootwait systemd.run=/boot/firmware/firstrun.sh systemd.run_success_action=reboot``` where this is what we add to it **systemd.run=/boot/firmware/firstrun.sh systemd.run_success_action=reboot**. It instructs the system to run our script and if successful, reboot. If the script run successfully it will remove the addition so that it only runs again if WiFi connection was not established.
   
 4. **Create firstrun.sh**
     - In the same boot partition, add the `firstrun.sh` file from this repo.
@@ -63,7 +63,7 @@ Tested successfully on:
 ### Troubleshooting
 
 - **No connection after first boot** → Mount SD card again → Check `firstrun_log.txt` for errors (e.g. wrong password, country code issue, NM timeout).
-- **Script runs repeatedly** → The cleanup sed commands failed — manually edit /boot/firmware/cmdline.txt to remove the systemd.run=... parts.
+- **Script runs repeatedly** → The cleanup sed commands failed — manually edit `/boot/firmware/cmdline.txt` to remove the systemd.run=... parts.
 
 ### Security Notes
 
