@@ -64,6 +64,7 @@ Tested successfully on:
 
 - **No connection after first boot** → Mount SD card again → Check `firstrun_log.txt` for errors (e.g. wrong password, country code issue, NM timeout).
 - **Script runs repeatedly** → The cleanup sed commands failed — manually edit `/boot/firmware/cmdline.txt` to remove the systemd.run=... parts.
+- if you end up making changes to `cmdline.txt`, make sure there are no line breaks. It will not execute.
 
 ### Security Notes
 
